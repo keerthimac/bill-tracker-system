@@ -1,0 +1,57 @@
+package com.keerthimac.bill_tracker_system.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "bill_items")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class BillItem {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_bill_id", nullable = false)
+    private PurchaseBill purchaseBill;
+
+    @Column(nullable = false)
+    private String materialName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_category_id", nullable = false)
+    private ItemCategory itemCategory;
+
+    @Column(nullable = false, precision = 10, scale = 3) // e.g., 10.500 units
+    private BigDecimal quantity;
+
+    @Column(nullable = false)
+    private String unit; // e.g., "bags", "tons", "nos"
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal unitPrice;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal itemTotalPrice; // Should be calculated: quantity * unitPrice
+
+    private boolean grnReceivedForItem = false;
+
+    @Column(columnDefinition = "TEXT") // For potentially longer remarks
+    private String remarks;
+
+    // Before persisting or updating, you might want to calculate itemTotalPrice
+    @PrePersist
+    @PreUpdate
+    public void calculateItemTotalPrice() {
+        if (this.quantity != null && this.unitPrice != null) {
+            this.itemTotalPrice = this.quantity.multiply(this.unitPrice);
+        }
+    }
+}
