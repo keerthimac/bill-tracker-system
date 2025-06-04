@@ -11,7 +11,7 @@ public class PurchaseBillResponseDTO {
     private Long id;
     private String billNumber;
     private LocalDate billDate;
-    private String supplierName;
+    private SupplierResponseDTO supplier;
     private SiteDTO site; // Embed SiteDTO
     private String billImagePath;
     private String overallGrnStatus; // String representation of the enum

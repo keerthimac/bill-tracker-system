@@ -11,4 +11,5 @@ public interface SiteService {
     List<SiteDTO> getAllSites();
     SiteDTO updateSite(Long id, SiteDTO siteDTO);
     void deleteSite(Long id);
+    // Potentially other methods like findByName if you defined them
 }

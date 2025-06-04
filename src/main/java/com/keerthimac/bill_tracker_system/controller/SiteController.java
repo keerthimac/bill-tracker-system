@@ -24,8 +24,7 @@ public class SiteController {
 
     // POST: Create a new Site
     @PostMapping
-    public ResponseEntity<SiteDTO> createSite(@Valid @RequestBody SiteDTO siteDTO) {
-        // Assuming SiteService handles any duplicate name checks if necessary
+    public ResponseEntity<SiteDTO> createSite(@Valid @RequestBody SiteDTO siteDTO) { // <<<< @Valid IS CRUCIAL
         SiteDTO createdSite = siteService.createSite(siteDTO);
         return new ResponseEntity<>(createdSite, HttpStatus.CREATED);
     }

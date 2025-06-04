@@ -3,20 +3,24 @@ import com.keerthimac.bill_tracker_system.entity.ItemCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List; // For potential future search methods
 import java.util.Optional;
 
-@Repository // Marks this as a Spring Data repository
+@Repository
 public interface ItemCategoryRepository extends JpaRepository<ItemCategory, Long> {
-    // JpaRepository<EntityType, IDType>
 
-    // Spring Data JPA will automatically provide methods like:
-    // save(ItemCategory entity)
-    // findById(Long id)
-    // findAll()
-    // deleteById(Long id)
-    // ...and many more.
+    /**
+     * Finds an item category by its name, ignoring case.
+     * @param name The name of the item category.
+     * @return An Optional containing the found ItemCategory or empty if not found.
+     */
+    Optional<ItemCategory> findByNameIgnoreCase(String name);
 
-    // You can also define custom query methods here if needed.
-    // For example, to find a category by its name:
-    Optional<ItemCategory> findByName(String name);
+    /**
+     * Finds item categories whose names contain the given fragment, ignoring case.
+     * Useful for search functionality.
+     * @param nameFragment The fragment to search for within item category names.
+     * @return A list of matching ItemCategory entities.
+     */
+    // List<ItemCategory> findByNameContainingIgnoreCase(String nameFragment); // You can uncomment this if you plan to add a search service method
 }
