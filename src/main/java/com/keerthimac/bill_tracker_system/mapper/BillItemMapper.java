@@ -5,28 +5,31 @@ import com.keerthimac.bill_tracker_system.dto.BillItemResponseDTO;
 import com.keerthimac.bill_tracker_system.entity.BillItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring", uses = {ItemCategoryMapper.class}) // 'uses' allows this mapper to use ItemCategoryMapper
+import java.util.List;
+
+@Mapper(componentModel = "spring") // ItemCategoryMapper is not directly used here anymore for mapping to BillItemResponseDTO's category
 public interface BillItemMapper {
 
-    BillItemMapper INSTANCE = Mappers.getMapper(BillItemMapper.class);
-
-    // For mapping from BillItem entity to BillItemResponseDTO
-    // itemCategory will be handled by ItemCategoryMapper
-    @Mapping(source = "itemCategory", target = "itemCategory")
+    @Mappings({
+            @Mapping(source = "masterMaterial.id", target = "masterMaterialId"),
+            @Mapping(source = "masterMaterial.materialCode", target = "masterMaterialCode"),
+            @Mapping(source = "masterMaterial.name", target = "masterMaterialName"),
+            @Mapping(source = "masterMaterial.itemCategory.name", target = "itemCategoryName")
+            // grnReceivedForItem, remarks, quantity, unit, unitPrice, itemTotalPrice should map by name
+    })
     BillItemResponseDTO toResponseDto(BillItem billItem);
 
-    // For mapping from BillItemRequestDTO to BillItem entity
-    // We need to ignore 'itemCategory' here because BillItemRequestDTO has 'itemCategoryId'
-    // The category will be fetched and set in the service layer.
-    // Also ignore itemTotalPrice and grnReceivedForItem as they are set programmatically
-    @Mapping(target = "id", ignore = true) // Usually ignore ID for creation from DTO
-    @Mapping(target = "purchaseBill", ignore = true) // Will be set in the service
-    @Mapping(target = "itemCategory", ignore = true) // Will be set in service using itemCategoryId
-    @Mapping(target = "itemTotalPrice", ignore = true) // Calculated in service or @PrePersist
-    @Mapping(target = "grnReceivedForItem", ignore = true) // Defaulted or set in service
-    @Mapping(target = "remarks", ignore = true) // Usually not set on creation
+    List<BillItemResponseDTO> toResponseDtoList(List<BillItem> billItems);
+
+    @Mappings({
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "purchaseBill", ignore = true),    // Set by service
+            @Mapping(target = "masterMaterial", ignore = true), // Set by service using masterMaterialId from DTO
+            @Mapping(target = "itemTotalPrice", ignore = true),  // Calculated by @PrePersist/@PreUpdate
+            @Mapping(target = "grnReceivedForItem", ignore = true), // Defaults in entity or set by service
+            @Mapping(target = "remarks", ignore = true)          // Optional, set later
+    })
     BillItem toEntity(BillItemRequestDTO billItemRequestDTO);
 }

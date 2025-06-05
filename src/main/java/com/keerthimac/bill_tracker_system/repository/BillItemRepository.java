@@ -1,8 +1,6 @@
 package com.keerthimac.bill_tracker_system.repository;
 
 import com.keerthimac.bill_tracker_system.entity.BillItem;
-import com.keerthimac.bill_tracker_system.entity.ItemCategory;
-import com.keerthimac.bill_tracker_system.entity.PurchaseBill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,20 +9,36 @@ import java.util.List;
 @Repository
 public interface BillItemRepository extends JpaRepository<BillItem, Long> {
 
-    // Find all items belonging to a specific PurchaseBill
-    List<BillItem> findByPurchaseBill(PurchaseBill purchaseBill);
+    /**
+     * Finds all bill items associated with a specific purchase bill.
+     * @param purchaseBillId The ID of the PurchaseBill.
+     * @return A list of BillItems belonging to the specified purchase bill.
+     */
     List<BillItem> findByPurchaseBillId(Long purchaseBillId);
 
-    // Find all items belonging to a specific ItemCategory
-    List<BillItem> findByItemCategory(ItemCategory itemCategory);
-    List<BillItem> findByItemCategoryId(Long itemCategoryId);
+    /**
+     * Finds all bill items associated with a specific master material.
+     * Useful for checking where a master material has been used.
+     * @param masterMaterialId The ID of the MasterMaterial.
+     * @return A list of BillItems using the specified master material.
+     */
+    List<BillItem> findByMasterMaterialId(Long masterMaterialId);
 
-    // Find items that have not yet received GRN confirmation
-    List<BillItem> findByGrnReceivedForItemFalse();
+    /**
+     * Checks if any BillItem is associated with a specific MasterMaterial.
+     * More efficient than fetching the list if you only need to check existence.
+     * @param masterMaterialId The ID of the MasterMaterial.
+     * @return true if any BillItem uses this MasterMaterial, false otherwise.
+     */
+    boolean existsByMasterMaterialId(Long masterMaterialId);
 
-    // Find items for a specific bill that have not yet received GRN confirmation
-    List<BillItem> findByPurchaseBillIdAndGrnReceivedForItemFalse(Long purchaseBillId);
+    // The methods findByItemCategoryId(Long itemCategoryId) and
+    // findByMaterialName(String materialName) have been removed
+    // because BillItem no longer has direct itemCategoryId or materialName properties.
 
-    // Find items by material name (e.g., for searching)
-    List<BillItem> findByMaterialNameContainingIgnoreCase(String materialName);
+    // Queries based on material properties (like name or category) should now
+    // primarily go through MasterMaterialRepository. If you need BillItems
+    // based on those criteria, you would first query MasterMaterialRepository
+    // and then use the resulting MasterMaterial IDs to query BillItemRepository
+    // (e.g., using findByMasterMaterialIdIn(List<Long> masterMaterialIds) if needed).
 }

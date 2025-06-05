@@ -2,6 +2,7 @@ package com.keerthimac.bill_tracker_system.exception.handler;
 
 import com.keerthimac.bill_tracker_system.dto.ErrorResponseDTO;
 import com.keerthimac.bill_tracker_system.exception.DuplicateResourceException;
+import com.keerthimac.bill_tracker_system.exception.ResourceInUseException;
 import com.keerthimac.bill_tracker_system.exception.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -110,4 +111,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // In GlobalExceptionHandler.java
+    @ExceptionHandler(ResourceInUseException.class)
+    public ResponseEntity<Object> handleResourceInUseException(
+            ResourceInUseException ex, WebRequest request) {
+
+        String path = ((ServletWebRequest)request).getRequest().getRequestURI();
+        ErrorResponseDTO errorResponse = new ErrorResponseDTO(
+                HttpStatus.CONFLICT,
+                ex.getMessage(),
+                path
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+
 }

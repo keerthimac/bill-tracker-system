@@ -3,10 +3,13 @@ import com.keerthimac.bill_tracker_system.entity.OverallGrnStatus;
 import com.keerthimac.bill_tracker_system.entity.PurchaseBill;
 import com.keerthimac.bill_tracker_system.entity.Site;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PurchaseBillRepository extends JpaRepository<PurchaseBill, Long> {
@@ -28,6 +31,9 @@ public interface PurchaseBillRepository extends JpaRepository<PurchaseBill, Long
 
     // Find bills by supplier name (case-insensitive example)
     List<PurchaseBill> findBySupplierNameIgnoreCase(String supplierName);
+
+    @Query("SELECT pb FROM PurchaseBill pb LEFT JOIN FETCH pb.billItems WHERE pb.id = :id")
+    Optional<PurchaseBill> findByIdWithItems(@Param("id") Long id);
 
     // Example of a more complex custom query using JPQL (Java Persistence Query Language)
     // This might be useful for your reporting needs later.
